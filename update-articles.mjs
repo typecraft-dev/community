@@ -83,7 +83,7 @@ async function findPostBySlug(slug) {
 
 async function getAuthorByEmail(email) {
   try {
-    const members = await adminApi.members.browse({ filter: `email:${email}` });
+    const members = await adminApi.members.browse({filter: `email: ${email}`, limit: 1});
     return members.length ? members[0] : null;
   } catch (error) {
     console.error('Error fetching author by email:', error);

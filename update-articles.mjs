@@ -11,16 +11,14 @@ import { DateTime } from 'luxon';
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
   key: process.env.GHOST_ADMIN_API_KEY,
-  version: "v3.0"
+  version: "v5.0"
 });
 
 const contentApi = new GhostContentAPI({
   url: process.env.GHOST_API_URL,
   key: process.env.GHOST_CONTENT_API_KEY,
-  version: "v3"
+  version: "v5"
 });
-
-let authorsCache = null;
 
 async function getChangedFiles() {
   try {
@@ -83,25 +81,24 @@ async function findPostBySlug(slug) {
   }
 }
 
-async function getAllAuthors() {
-  if (!authorsCache) {
-    try {
-      authorsCache = await adminApi.authors.browse();
-    } catch (error) {
-      console.error('Error fetching authors:', error);
-      throw error;
-    }
+async function getAuthorByEmail(email) {
+  try {
+    const members = await adminApi.members.browse({ filter: `email:${email}` });
+    return members.length ? members[0] : null;
+  } catch (error) {
+    console.error('Error fetching author by email:', error);
+    throw error;
   }
-  return authorsCache;
 }
 
 async function getAuthorData(authorName) {
+  const defaultAuthorEmail = 'robert@typecraft.dev';
   try {
-    const authors = await getAllAuthors();
-    let author = authors.find(a => a.name === authorName);
+    const commitAuthor = await getCommitAuthor();
+    let author = await getAuthorByEmail(commitAuthor);
     if (!author) {
-      console.warn(`Author ${authorName} not found. Using fallback author.`);
-      author = authors.find(a => a.email === 'robert@typecraft.dev');
+      console.warn(`Author ${commitAuthor} not found. Using fallback author.`);
+      author = await getAuthorByEmail(defaultAuthorEmail);
     }
     if (author) {
       return { id: author.id };
@@ -120,10 +117,7 @@ async function updateOrCreateArticles() {
     const files = await getChangedFiles();
     console.log(`Files to process: ${files}`);
 
-    const authorName = await getCommitAuthor();
-    console.log(`Author name: ${authorName}`);
-
-    const authorData = await getAuthorData(authorName);
+    const authorData = await getAuthorData();
     if (!authorData) {
       console.error('Error: No valid author data found. Skipping post update/creation.');
       return;
@@ -137,7 +131,7 @@ async function updateOrCreateArticles() {
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
-      const tags = (frontMatter.tags || []).concat('#community');
+      const tags = (frontMatter.tags || []).concat('community');
       console.log(`Tags for post: ${tags}`);
 
       const mobiledoc = JSON.stringify({

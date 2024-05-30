@@ -3,7 +3,6 @@ import GhostContentAPI from '@tryghost/content-api';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import yaml from 'js-yaml';
 import matter from 'gray-matter';
 import fetch from 'node-fetch';
 import { DateTime } from 'luxon';
@@ -83,7 +82,8 @@ async function findPostBySlug(slug) {
 
 async function getAuthorByEmail(email) {
   try {
-    const members = await adminApi.members.browse({filter: `email: ${email}`, limit: 1});
+    console.log(`Fetching author by email: ${email}`);
+    const members = await adminApi.members.browse({ filter: `email:${email}`, limit: 1 });
     return members.length ? members[0] : null;
   } catch (error) {
     console.error('Error fetching author by email:', error);
@@ -91,13 +91,13 @@ async function getAuthorByEmail(email) {
   }
 }
 
-async function getAuthorData(authorName) {
+async function getAuthorData() {
   const defaultAuthorEmail = 'robert@typecraft.dev';
   try {
-    const commitAuthor = await getCommitAuthor();
-    let author = await getAuthorByEmail(commitAuthor);
+    const commitAuthorEmail = await getCommitAuthor();
+    let author = await getAuthorByEmail(commitAuthorEmail);
     if (!author) {
-      console.warn(`Author ${commitAuthor} not found. Using fallback author.`);
+      console.warn(`Author with email ${commitAuthorEmail} not found. Using fallback author.`);
       author = await getAuthorByEmail(defaultAuthorEmail);
     }
     if (author) {

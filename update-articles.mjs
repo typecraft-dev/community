@@ -91,17 +91,32 @@ async function findAuthorByName(name) {
   }
 }
 
+async function findAuthorByEmail(email) {
+  try {
+    const authors = await contentApi.authors.browse({ filter: `email:${email}` });
+    return authors.length ? authors[0] : null;
+  } catch (error) {
+    console.error('Error finding author by email:', error);
+    throw error;
+  }
+}
+
 async function getAuthorData(authorName) {
   try {
-    const author = await findAuthorByName(authorName);
+    let author = await findAuthorByName(authorName);
+    if (!author) {
+      console.warn(`Author ${authorName} not found. Using fallback author.`);
+      author = await findAuthorByEmail('robert@typecraft.dev');
+    }
     if (author) {
-      return { id: author.id };
+      return { id: author.id, slug: author.slug, email: author.email };
     } else {
-      return { name: authorName };
+      console.error('Error: Fallback author not found.');
+      return null;
     }
   } catch (error) {
     console.error('Error in getAuthorData:', error);
-    return { name: authorName };
+    return null;
   }
 }
 
@@ -114,6 +129,11 @@ async function updateOrCreateArticles() {
     console.log(`Author name: ${authorName}`);
 
     const authorData = await getAuthorData(authorName);
+    if (!authorData) {
+      console.error('Error: No valid author data found. Skipping post update/creation.');
+      return;
+    }
+    console.log(`Author data: ${JSON.stringify(authorData)}`);
 
     for (const file of files) {
       console.log(`Processing file: ${file}`);
@@ -156,7 +176,7 @@ async function updateOrCreateArticles() {
             id: post.id,
             title: frontMatter.title || post.title,
             tags: tags,
-            authors: [authorData],
+            authors: [{ id: authorData.id }],
             mobiledoc: mobiledoc,
             published_at: publishedAt,
             updated_at: post.updated_at
@@ -168,7 +188,7 @@ async function updateOrCreateArticles() {
             title: frontMatter.title || slug,
             slug: slug,
             tags: tags,
-            authors: [authorData],
+            authors: [{ id: authorData.id }],
             mobiledoc: mobiledoc,
             published_at: publishedAt
           });

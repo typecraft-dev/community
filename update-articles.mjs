@@ -36,6 +36,12 @@ async function getCommitAuthor() {
 
   const response = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
   const commitData = await response.json();
+  
+  if (!commitData || !commitData.commit || !commitData.commit.author || !commitData.commit.author.name) {
+    console.warn(`Warning: Commit data is missing required author information for SHA: ${sha}. Using default author.`);
+    return "Unnamed Dev";
+  }
+  
   return commitData.commit.author.name;
 }
 

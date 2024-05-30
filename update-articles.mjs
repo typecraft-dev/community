@@ -1,10 +1,10 @@
-const GhostAdminAPI = require('@tryghost/admin-api');
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const yaml = require('js-yaml');
-const matter = require('gray-matter');
-const fetch = require('node-fetch');
+import GhostAdminAPI from '@tryghost/admin-api';
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import yaml from 'js-yaml';
+import matter from 'gray-matter';
+import fetch from 'node-fetch';
 
 const api = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,

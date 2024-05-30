@@ -1,4 +1,5 @@
 import GhostAdminAPI from '@tryghost/admin-api';
+import GhostContentAPI from '@tryghost/content-api';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -7,10 +8,16 @@ import matter from 'gray-matter';
 import fetch from 'node-fetch';
 import { DateTime } from 'luxon';
 
-const api = new GhostAdminAPI({
+const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
   key: process.env.GHOST_ADMIN_API_KEY,
   version: "v3.0"
+});
+
+const contentApi = new GhostContentAPI({
+  url: process.env.GHOST_API_URL,
+  key: process.env.GHOST_CONTENT_API_KEY,
+  version: "v3"
 });
 
 async function getChangedFiles() {
@@ -66,7 +73,7 @@ async function getCommitAuthor() {
 
 async function findPostBySlug(slug) {
   try {
-    const posts = await api.posts.browse({ filter: `slug:${slug}` });
+    const posts = await contentApi.posts.browse({ filter: `slug:${slug}` });
     return posts.length ? posts[0] : null;
   } catch (error) {
     console.error('Error finding post by slug:', error);
@@ -76,11 +83,25 @@ async function findPostBySlug(slug) {
 
 async function findAuthorByName(name) {
   try {
-    const authors = await api.authors.browse({ filter: `name:${name}` });
+    const authors = await contentApi.authors.browse({ filter: `name:${name}` });
     return authors.length ? authors[0] : null;
   } catch (error) {
     console.error('Error finding author by name:', error);
     throw error;
+  }
+}
+
+async function getAuthorData(authorName) {
+  try {
+    const author = await findAuthorByName(authorName);
+    if (author) {
+      return { id: author.id };
+    } else {
+      return { name: authorName };
+    }
+  } catch (error) {
+    console.error('Error in getAuthorData:', error);
+    return { name: authorName };
   }
 }
 
@@ -92,8 +113,7 @@ async function updateOrCreateArticles() {
     const authorName = await getCommitAuthor();
     console.log(`Author name: ${authorName}`);
 
-    const author = await findAuthorByName(authorName);
-    const authorData = author ? { id: author.id } : { name: authorName };
+    const authorData = await getAuthorData(authorName);
 
     for (const file of files) {
       console.log(`Processing file: ${file}`);
@@ -132,7 +152,7 @@ async function updateOrCreateArticles() {
           console.log(`Post found, updating post with slug: ${slug}`);
 
           // If post exists, update it
-          post = await api.posts.edit({
+          post = await adminApi.posts.edit({
             id: post.id,
             title: frontMatter.title || post.title,
             tags: tags,
@@ -144,7 +164,7 @@ async function updateOrCreateArticles() {
           console.log('Post updated:', post);
         } else {
           console.log(`Post not found, creating new post with slug: ${slug}`);
-          const newPost = await api.posts.add({
+          const newPost = await adminApi.posts.add({
             title: frontMatter.title || slug,
             slug: slug,
             tags: tags,

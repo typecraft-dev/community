@@ -10,6 +10,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tryghost/admin-api": "^1.13.12"
+    "@tryghost/admin-api": "^1.13.12",
+    "@tryghost/content-api": "^1.11.21",
+    "@tryghost/kg-html-to-lexical": "^1.1.1",
+    "axios": "^1.7.2",
+    "child_process": "^1.0.2",
+    "dotenv": "^16.4.5",
+    "form-data": "^4.0.0",
+    "fs": "^0.0.1-security",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "jsdom": "^24.1.0",
+    "luxon": "^3.4.4",
+    "marked": "^12.0.2",
+    "node-fetch": "^3.3.2",
+    "path": "^0.12.7"
   }
 }

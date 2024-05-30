@@ -50,6 +50,7 @@ async function updateOrCreateArticles() {
   const authorName = await getCommitAuthor();
 
   for (const file of files) {
+    console.warn('Processing file:', file);
     const postId = path.basename(file, '.md'); // Assuming file names are post IDs
     const fileContent = fs.readFileSync(file, 'utf8');
     const { data: frontMatter, content: markdownContent } = matter(fileContent);
@@ -69,6 +70,7 @@ async function updateOrCreateArticles() {
 
     try {
       // Try to read the post
+      console.log('Reading post:', postId);
       let post = await api.posts.read({ id: postId });
       // If post exists, update it
       post = await api.posts.edit({

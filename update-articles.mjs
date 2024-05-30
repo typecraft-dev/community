@@ -16,8 +16,12 @@ async function getChangedFiles() {
   const repo = process.env.GITHUB_REPOSITORY;
   const sha = process.env.GITHUB_SHA;
 
-  // Fetch the full history to ensure we have the previous commit
-  execSync('git fetch --unshallow');
+  // Check if the repository is shallow
+  const isShallow = fs.existsSync('.git/shallow');
+  if (isShallow) {
+    execSync('git fetch --unshallow');
+  }
+
   execSync('git fetch origin +refs/heads/main:refs/remotes/origin/main');
 
   const baseSha = execSync(`git rev-parse origin/main~1`).toString().trim();
@@ -45,7 +49,7 @@ async function updateOrCreateArticles() {
     const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
     // Ensure the tag #community is always included
-    const tags = (frontMatter.tags || []).concat('community');
+    const tags = (frontMatter.tags || []).concat('#community');
 
     const mobiledoc = JSON.stringify({
       version: "0.3.1",

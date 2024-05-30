@@ -24,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Run update script
-        run: node update-articles.js
+        run: node create-or-update-articles.js
         env:
           GHOST_API_URL: ${{ secrets.GHOST_API_URL }}
           GHOST_ADMIN_API_KEY: ${{ secrets.GHOST_ADMIN_API_KEY }}

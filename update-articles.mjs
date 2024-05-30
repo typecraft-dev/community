@@ -73,7 +73,7 @@ async function updateOrCreateArticles() {
 
     for (const file of files) {
       console.log(`Processing file: ${file}`);
-      const postId = path.basename(file, '.md'); // Assuming file names are post IDs
+      const slug = path.basename(file, '.md'); // Assuming file names can be used as slugs
       const fileContent = fs.readFileSync(file, 'utf8');
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
@@ -92,9 +92,9 @@ async function updateOrCreateArticles() {
       });
 
       try {
-        // Try to read the post
-        let post = await api.posts.read({ id: postId });
-        console.log(`Post found, updating post with ID: ${postId}`);
+        // Try to read the post by slug
+        let post = await api.posts.read({ slug: slug });
+        console.log(`Post found, updating post with slug: ${slug}`);
 
         // If post exists, update it
         post = await api.posts.edit({
@@ -109,10 +109,10 @@ async function updateOrCreateArticles() {
       } catch (err) {
         // If post does not exist, create it
         if (err.response && err.response.status === 404) {
-          console.log(`Post not found, creating new post with ID: ${postId}`);
+          console.log(`Post not found, creating new post with slug: ${slug}`);
           const newPost = await api.posts.add({
-            id: postId,
-            title: frontMatter.title,
+            title: frontMatter.title || slug,
+            slug: slug,
             tags: tags,
             authors: [{ name: frontMatter.author || authorName }],
             mobiledoc: mobiledoc,

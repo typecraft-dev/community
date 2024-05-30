@@ -10,6 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tryghost/admin-api": "^1.13.12"
+    "@tryghost/admin-api": "^1.13.12",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^3.3.2"
   }
 }

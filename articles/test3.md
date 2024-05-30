@@ -1,7 +1,7 @@
 ---
 title: "My 3rd Awesome Article"
 tags: ["test_tag"]
-author: "Robert Beene"
+author: "Robert@typecraft.dev"
 published_at: "2023-05-30"
 ---
 

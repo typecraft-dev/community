@@ -40,7 +40,7 @@ async function updateOrCreateArticles() {
     const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
     // Ensure the tag #community is always included
-    const tags = (frontMatter.tags || []).concat('community');
+    const tags = (frontMatter.tags || []).concat('#community');
 
     const mobiledoc = JSON.stringify({
       version: "0.3.1",

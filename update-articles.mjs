@@ -63,6 +63,16 @@ async function getCommitAuthor() {
   }
 }
 
+async function findPostBySlug(slug) {
+  try {
+    const posts = await api.posts.browse({ filter: `slug:${slug}` });
+    return posts.length ? posts[0] : null;
+  } catch (error) {
+    console.error('Error finding post by slug:', error);
+    throw error;
+  }
+}
+
 async function updateOrCreateArticles() {
   try {
     const files = await getChangedFiles();
@@ -78,7 +88,7 @@ async function updateOrCreateArticles() {
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
-      const tags = (frontMatter.tags || []).concat('#community');
+      const tags = (frontMatter.tags || []).concat('community');
       console.log(`Tags for post: ${tags}`);
 
       const mobiledoc = JSON.stringify({
@@ -92,23 +102,22 @@ async function updateOrCreateArticles() {
       });
 
       try {
-        // Try to read the post by slug
-        let post = await api.posts.read({ slug: slug });
-        console.log(`Post found, updating post with slug: ${slug}`);
+        // Try to find the post by slug
+        let post = await findPostBySlug(slug);
+        if (post) {
+          console.log(`Post found, updating post with slug: ${slug}`);
 
-        // If post exists, update it
-        post = await api.posts.edit({
-          id: post.id,
-          title: frontMatter.title || post.title,
-          tags: tags,
-          authors: [{ name: frontMatter.author || authorName }],
-          mobiledoc: mobiledoc,
-          updated_at: post.updated_at
-        });
-        console.log('Post updated:', post);
-      } catch (err) {
-        // If post does not exist, create it
-        if (err.response && err.response.status === 404) {
+          // If post exists, update it
+          post = await api.posts.edit({
+            id: post.id,
+            title: frontMatter.title || post.title,
+            tags: tags,
+            authors: [{ name: frontMatter.author || authorName }],
+            mobiledoc: mobiledoc,
+            updated_at: post.updated_at
+          });
+          console.log('Post updated:', post);
+        } else {
           console.log(`Post not found, creating new post with slug: ${slug}`);
           const newPost = await api.posts.add({
             title: frontMatter.title || slug,
@@ -119,9 +128,9 @@ async function updateOrCreateArticles() {
             published_at: frontMatter.published_at
           });
           console.log('New post created:', newPost);
-        } else {
-          console.error('Error updating or creating post:', err);
         }
+      } catch (err) {
+        console.error('Error updating or creating post:', err);
       }
     }
   } catch (error) {

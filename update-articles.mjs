@@ -5,6 +5,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import matter from 'gray-matter';
 import fetch from 'node-fetch';
+import { DateTime } from 'luxon';
 
 const api = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
@@ -73,6 +74,16 @@ async function findPostBySlug(slug) {
   }
 }
 
+async function findAuthorByName(name) {
+  try {
+    const authors = await api.authors.browse({ filter: `name:${name}` });
+    return authors.length ? authors[0] : null;
+  } catch (error) {
+    console.error('Error finding author by name:', error);
+    throw error;
+  }
+}
+
 async function updateOrCreateArticles() {
   try {
     const files = await getChangedFiles();
@@ -81,6 +92,9 @@ async function updateOrCreateArticles() {
     const authorName = await getCommitAuthor();
     console.log(`Author name: ${authorName}`);
 
+    const author = await findAuthorByName(authorName);
+    const authorData = author ? { id: author.id } : { name: authorName };
+
     for (const file of files) {
       console.log(`Processing file: ${file}`);
       const slug = path.basename(file, '.md'); // Assuming file names can be used as slugs
@@ -88,7 +102,7 @@ async function updateOrCreateArticles() {
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
-      const tags = (frontMatter.tags || []).concat('community');
+      const tags = (frontMatter.tags || []).concat('#community');
       console.log(`Tags for post: ${tags}`);
 
       const mobiledoc = JSON.stringify({
@@ -101,6 +115,16 @@ async function updateOrCreateArticles() {
         ]
       });
 
+      // Validate and format published_at
+      let publishedAt = frontMatter.published_at;
+      if (publishedAt) {
+        publishedAt = DateTime.fromISO(publishedAt).toISO();
+        if (!publishedAt) {
+          console.warn(`Invalid published_at format for file: ${file}. Using current date-time.`);
+          publishedAt = DateTime.now().toISO();
+        }
+      }
+
       try {
         // Try to find the post by slug
         let post = await findPostBySlug(slug);
@@ -112,8 +136,9 @@ async function updateOrCreateArticles() {
             id: post.id,
             title: frontMatter.title || post.title,
             tags: tags,
-            authors: [{ name: frontMatter.author || authorName }],
+            authors: [authorData],
             mobiledoc: mobiledoc,
+            published_at: publishedAt,
             updated_at: post.updated_at
           });
           console.log('Post updated:', post);
@@ -123,9 +148,9 @@ async function updateOrCreateArticles() {
             title: frontMatter.title || slug,
             slug: slug,
             tags: tags,
-            authors: [{ name: frontMatter.author || authorName }],
+            authors: [authorData],
             mobiledoc: mobiledoc,
-            published_at: frontMatter.published_at
+            published_at: publishedAt
           });
           console.log('New post created:', newPost);
         }

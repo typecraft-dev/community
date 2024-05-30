@@ -20,6 +20,8 @@ const contentApi = new GhostContentAPI({
   version: "v3"
 });
 
+let authorsCache = null;
+
 async function getChangedFiles() {
   try {
     const repo = process.env.GITHUB_REPOSITORY;
@@ -81,35 +83,28 @@ async function findPostBySlug(slug) {
   }
 }
 
-async function findAuthorByName(name) {
-  try {
-    const authors = await contentApi.authors.browse({ filter: `name:${name}` });
-    return authors.length ? authors[0] : null;
-  } catch (error) {
-    console.error('Error finding author by name:', error);
-    throw error;
+async function getAllAuthors() {
+  if (!authorsCache) {
+    try {
+      authorsCache = await adminApi.authors.browse();
+    } catch (error) {
+      console.error('Error fetching authors:', error);
+      throw error;
+    }
   }
-}
-
-async function findAuthorByEmail(email) {
-  try {
-    const authors = await contentApi.authors.browse({ filter: `email:${email}` });
-    return authors.length ? authors[0] : null;
-  } catch (error) {
-    console.error('Error finding author by email:', error);
-    throw error;
-  }
+  return authorsCache;
 }
 
 async function getAuthorData(authorName) {
   try {
-    let author = await findAuthorByName(authorName);
+    const authors = await getAllAuthors();
+    let author = authors.find(a => a.name === authorName);
     if (!author) {
       console.warn(`Author ${authorName} not found. Using fallback author.`);
-      author = await findAuthorByEmail('robert@typecraft.dev');
+      author = authors.find(a => a.email === 'robert@typecraft.dev');
     }
     if (author) {
-      return { id: author.id, slug: author.slug, email: author.email };
+      return { id: author.id };
     } else {
       console.error('Error: Fallback author not found.');
       return null;

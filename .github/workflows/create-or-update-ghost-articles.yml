@@ -11,6 +11,9 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

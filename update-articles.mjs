@@ -76,18 +76,30 @@ async function getCommitAuthor() {
 }
 
 async function findPostById(postId) {
-  try {
-    const post = await contentApi.posts.read({ id: postId });
-    console.log(`Post found by ID: ${JSON.stringify(post)}`);
-    return post;
-  } catch (error) {
-    if (error.response && error.response.status === 404) {
-      console.log(`Post not found for ID: ${postId}`);
-      return null; // Post not found
+    try {
+        console.log(`Attempting to find post with ID: ${postId}`);
+        const post = await adminApi.posts.read({ id: postId });
+        console.log(`Post found by ID: ${JSON.stringify(post, null, 2)}`);
+        return post;
+    } catch (error) {
+        if (error.response) {
+            // API responded with a status code outside the range of 2xx
+            console.error(`Error response data: ${JSON.stringify(error.response.data, null, 2)}`);
+            console.error(`Error response status: ${error.response.status}`);
+            console.error(`Error response headers: ${JSON.stringify(error.response.headers, null, 2)}`);
+            if (error.response.status === 404) {
+                console.log(`Post not found for ID: ${postId}`);
+                return null;
+            }
+        } else if (error.request) {
+            // Request was made but no response received
+            console.error('No response received:', error.request);
+        } else {
+            // Something happened in setting up the request
+            console.error('Error setting up request:', error.message);
+        }
+        throw error;
     }
-    console.error('Error finding post by ID:', error.message);
-    throw error;
-  }
 }
 
 async function getAuthorByEmail(email) {
@@ -232,7 +244,8 @@ async function updateOrCreateArticles() {
           tags: tags,
           authors: [{ id: authorData.id }],
           mobiledoc: mobiledoc,
-          feature_image: featuredImage
+          feature_image: featuredImage,
+          updated_at: post.updated_at
         });
         console.log('Post updated:', post);
       } else {
@@ -270,6 +283,8 @@ async function updateOrCreateArticles() {
     throw error;
   }
 }
+
+
 
 updateOrCreateArticles().catch(err => {
   console.error('Unhandled error:', err);

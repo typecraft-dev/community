@@ -76,7 +76,7 @@ async function getCommitAuthor() {
       return "robert@typecraft.dev";
     }
 
-    return commitData.commit.author.name;
+    return commitData.commit.author.email;
   } catch (error) {
     console.error('Error getting commit author:', error);
     throw error;
@@ -297,4 +297,5 @@ updateOrCreateArticles().catch(err => {
   console.error('Unhandled error:', err);
   process.exit(1);
 });
+
 

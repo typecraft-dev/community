@@ -77,13 +77,14 @@ async function getCommitAuthor() {
 
 async function findPostBySlug(slug) {
   try {
-    const posts = await contentApi.posts.browse({ filter: `slug:${slug}` });
+    const posts = await contentApi.posts.browse({ limit: 1, filter: `slug:${slug}` });
     return posts.length ? posts[0] : null;
   } catch (error) {
     console.error('Error finding post by slug:', error);
     throw error;
   }
 }
+
 
 async function getAuthorByEmail(email) {
   try {
@@ -252,4 +253,3 @@ updateOrCreateArticles().catch(err => {
   console.error('Unhandled error:', err);
   process.exit(1);
 });
-

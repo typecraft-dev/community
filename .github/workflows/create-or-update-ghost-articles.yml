@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write  # Explicitly set permissions for the GITHUB_TOKEN
 
     steps:
       - name: Checkout repository
@@ -41,13 +41,25 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-      - name: Commit and push changes
+      - name: Check for changes
+        id: changes
         run: |
           git add articles/*.md
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit."
+            echo "::set-output name=changes::false"
+          else
+            echo "Changes detected."
+            echo "::set-output name=changes::true"
+          fi
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changes == 'true'
+        run: |
           git commit -m "Update markdown files with postId"
           git push
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

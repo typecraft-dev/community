@@ -60,7 +60,7 @@ async function getCommitAuthor() {
 
     if (!commitData || !commitData.commit || !commitData.commit.author || !commitData.commit.author.name) {
       console.warn(`Warning: Commit data is missing required author information for SHA: ${sha}. Using default author.`);
-      return "Default Author";
+      return "robert@typecraft.dev";
     }
 
     return commitData.commit.author.name;
@@ -131,7 +131,7 @@ async function updateOrCreateArticles() {
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
-      const tags = (frontMatter.tags || []).concat('community');
+      const tags = (frontMatter.tags || []).concat('#community');
       console.log(`Tags for post: ${tags}`);
 
       const mobiledoc = JSON.stringify({

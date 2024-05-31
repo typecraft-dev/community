@@ -77,7 +77,8 @@ async function getCommitAuthor() {
 
 async function findPostBySlug(slug) {
   try {
-    const post = await contentApi.posts.read({ slug: slug });
+    console.log("Finding post by slug:", slug);
+    const post = await contentApi.posts.read({ slug: slug }, { formats: ['mobiledoc'] });
     return post;
   } catch (error) {
     if (error.response && error.response.status === 404) {

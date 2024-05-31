@@ -3,6 +3,7 @@ title: "iTerm Semantic History with Neovim"
 tags: ["vim", "iterm", "iterm2", "neovim", "terminal_emulator"] 
 author: "n8wm@icloud.com"
 featured_image: "https://cdn.discordapp.com/attachments/1246197478181572729/1246197586445078580/logo2x.png?ex=665b8371&is=665a31f1&hm=0adf1bb0b6732583123829d952ac372b009e948a49172aa76604652abc545742&"
+postId: 665a6013cd509e00014b9b3e
 ---
 
 *PSA for those who use iTerm and Neovim*

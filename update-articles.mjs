@@ -236,11 +236,11 @@ async function updateOrCreateArticles() {
       }
 
       if (post) {
-        console.log(`Post found, updating post with ID: ${post.posts[0].id}`);
+        console.log(`Post found, updating post with ID: ${post.id}`);
         // If post exists, update it
         await adminApi.posts.edit({
-          id: post.posts[0].id,
-          title: frontMatter.title || post.posts[0].title,
+          id: post.id,
+          title: frontMatter.title || post.title,
           tags: tags,
           authors: [{ id: authorData.id }],
           mobiledoc: mobiledoc,

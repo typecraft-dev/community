@@ -133,10 +133,23 @@ async function uploadImage(imagePath) {
   return result.images[0].url;
 }
 
+function processCustomMarkdown(markdownContent) {
+  // Replace callouts
+  const calloutRegex = /::: callout([\s\S]*?):::/g;
+  markdownContent = markdownContent.replace(calloutRegex, '<div class="callout">$1</div>');
+
+  // Replace image captions
+  const captionRegex = /!\[(.*?)\]\((.*?)\)\s*\*(.*?)\*/g;
+  markdownContent = markdownContent.replace(captionRegex, '<figure><img src="$2" alt="$1"><figcaption>$3</figcaption></figure>');
+
+  return markdownContent;
+}
+
 async function processMarkdownImages(markdownContent, markdownFilePath) {
+  const processedContent = processCustomMarkdown(markdownContent);
   const dom = new JSDOM();
   const document = dom.window.document;
-  const htmlContent = marked(markdownContent);
+  const htmlContent = marked(processedContent);
   const parser = new dom.window.DOMParser();
   const parsedHtml = parser.parseFromString(htmlContent, 'text/html');
   const images = parsedHtml.querySelectorAll('img');
@@ -189,16 +202,6 @@ async function updateOrCreateArticles() {
       const htmlContent = await processMarkdownImages(markdownContent, file);
       const mobiledoc = convertHtmlToMobiledoc(htmlContent);
 
-      // Validate and format published_at
-      let publishedAt = frontMatter.published_at;
-      if (publishedAt) {
-        publishedAt = DateTime.fromISO(publishedAt).toISO();
-        if (!publishedAt) {
-          console.warn(`Invalid published_at format for file: ${file}. Using current date-time.`);
-          publishedAt = DateTime.now().toISO();
-        }
-      }
-
       // Handle featured image URL or upload local image
       let featuredImage = frontMatter.featured_image || '';
       if (featuredImage && !featuredImage.startsWith('http')) {
@@ -220,8 +223,6 @@ async function updateOrCreateArticles() {
             tags: tags,
             authors: [{ id: authorData.id }],
             mobiledoc: mobiledoc,
-            published_at: publishedAt,
-            updated_at: post.updated_at,
             feature_image: featuredImage
           });
           console.log('Post updated:', post);
@@ -233,7 +234,6 @@ async function updateOrCreateArticles() {
             tags: tags,
             authors: [{ id: authorData.id }],
             mobiledoc: mobiledoc,
-            published_at: publishedAt,
             feature_image: featuredImage
           });
           console.log('New post created:', newPost);

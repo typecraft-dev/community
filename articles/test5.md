@@ -9,8 +9,15 @@ featured_image: "https://cdn.discordapp.com/attachments/1187941314269040680/1245
 #My 5th Awesome Article
 
 ~~some markdown~~
+
 *some more*
+
 **and this too**
+
+::: callout
+This is a callout
+:::
+
 
 #### I can't believe I had to do this!
 

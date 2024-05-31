@@ -79,7 +79,7 @@ async function findPostById(postId) {
     try {
         console.log(`Attempting to find post with ID: ${postId}`);
         const post = await adminApi.posts.read({ id: postId });
-        console.log(`Post found by ID: ${JSON.stringify(post, null, 2)}`);
+        console.log(`Post found by ID: ${post.id}`);
         return post;
     } catch (error) {
         if (error.response) {
@@ -211,7 +211,7 @@ async function updateOrCreateArticles() {
       const filePath = path.resolve(file);
       const slug = path.basename(file, '.md'); // Assuming file names can be used as slugs
       const fileContent = fs.readFileSync(filePath, 'utf8');
-      console.log(`File content: ${fileContent}`);
+      console.log(`File content\n\n\n\n: ${fileContent}`);
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
@@ -237,9 +237,11 @@ async function updateOrCreateArticles() {
       }
 
       if (post) {
+        console.log(`Mobiledoc is: \n\n\n\n ${mobiledoc}`);
         console.log(`Post found, updating post with ID: ${post.id}`);
         // If post exists, update it
-        await adminApi.posts.edit({
+        // capture result of edit request
+        const updatedPost = await adminApi.posts.edit({
           id: post.id,
           title: frontMatter.title || post.title,
           tags: tags,
@@ -248,6 +250,8 @@ async function updateOrCreateArticles() {
           feature_image: featuredImage,
           updated_at: post.updated_at
         });
+        // I don't think the update is working. Log out the response
+        console.log(`Updated post response: ${JSON.stringify(updatedPost)}`);
         console.log('Post updated:', post.id);
       } else {
         console.log(`Post not found, creating new post with slug: ${slug}`);
@@ -284,7 +288,6 @@ async function updateOrCreateArticles() {
     throw error;
   }
 }
-
 
 
 updateOrCreateArticles().catch(err => {

@@ -12,9 +12,14 @@
   "dependencies": {
     "@tryghost/admin-api": "^1.13.12",
     "@tryghost/content-api": "^1.11.21",
+    "child_process": "^1.0.2",
+    "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
+    "jsdom": "^24.1.0",
     "luxon": "^3.4.4",
-    "node-fetch": "^3.3.2"
+    "marked": "^12.0.2",
+    "node-fetch": "^3.3.2",
+    "path": "^0.12.7"
   }
 }

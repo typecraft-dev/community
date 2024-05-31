@@ -6,6 +6,8 @@ import path from 'path';
 import matter from 'gray-matter';
 import fetch from 'node-fetch';
 import { DateTime } from 'luxon';
+import marked from 'marked';
+import { JSDOM } from 'jsdom';
 
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
@@ -24,7 +26,6 @@ async function getChangedFiles() {
     const repo = process.env.GITHUB_REPOSITORY;
     const sha = process.env.GITHUB_SHA;
 
-    // Check if the repository is shallow
     const isShallow = fs.existsSync('.git/shallow');
     if (isShallow) {
       console.log('Repository is shallow, fetching full history...');
@@ -112,6 +113,30 @@ async function getAuthorData() {
   }
 }
 
+function convertMarkdownToMobiledoc(markdownContent) {
+  const htmlContent = marked(markdownContent);
+  const dom = new JSDOM(htmlContent);
+  const doc = dom.window.document;
+  const sections = [];
+
+  doc.body.childNodes.forEach(node => {
+    if (node.nodeType === node.ELEMENT_NODE) {
+      if (node.tagName === 'P') {
+        sections.push([1, 'p', [[0, [], 0, node.textContent]]]);
+      }
+      // Add more tag conversions as needed
+    }
+  });
+
+  return JSON.stringify({
+    version: '0.3.1',
+    atoms: [],
+    cards: [],
+    markups: [],
+    sections: sections,
+  });
+}
+
 async function updateOrCreateArticles() {
   try {
     const files = await getChangedFiles();
@@ -134,15 +159,7 @@ async function updateOrCreateArticles() {
       const tags = (frontMatter.tags || []).concat('#community');
       console.log(`Tags for post: ${tags}`);
 
-      const mobiledoc = JSON.stringify({
-        version: "0.3.1",
-        atoms: [],
-        cards: [],
-        markups: [],
-        sections: [
-          [1, "p", [[0, [], 0, markdownContent]]]
-        ]
-      });
+      const mobiledoc = convertMarkdownToMobiledoc(markdownContent);
 
       // Validate and format published_at
       let publishedAt = frontMatter.published_at;

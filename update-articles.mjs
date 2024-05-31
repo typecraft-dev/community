@@ -16,13 +16,13 @@ import { JSDOM } from 'jsdom';
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
   key: process.env.GHOST_ADMIN_API_KEY,
-  version: "v5.0"
+  version: 'v5.0'
 });
 
 const contentApi = new GhostContentAPI({
   url: process.env.GHOST_API_URL,
   key: process.env.GHOST_CONTENT_API_KEY,
-  version: "v5"
+  version: 'v5'
 });
 
 async function getChangedFiles() {
@@ -47,7 +47,7 @@ async function getChangedFiles() {
     const diffOutput = execSync(`git diff --name-only ${baseSha} ${sha}`).toString().trim();
     console.log(`Changed files: ${diffOutput}`);
 
-    return diffOutput.split('\n').filter(file => file.startsWith('articles/') && file.endsWith('.md'));
+    return diffOutput.split('\n').filter(file => file.startsWith('articles/') && file.endsWith('.md') && fs.existsSync(file));
   } catch (error) {
     console.error('Error getting changed files:', error);
     throw error;
@@ -84,7 +84,6 @@ async function findPostBySlug(slug) {
     throw error;
   }
 }
-
 
 async function getAuthorByEmail(email) {
   try {
@@ -211,36 +210,33 @@ async function updateOrCreateArticles() {
         console.log(`Uploaded featured image: ${featuredImage}`);
       }
 
-      try {
-        // Try to find the post by slug
-        let post = await findPostBySlug(slug);
-        if (post) {
-          console.log(`Post found, updating post with slug: ${slug}`);
+      // Find existing post by slug
+      const post = await findPostBySlug(slug);
 
-          // If post exists, update it
-          post = await adminApi.posts.edit({
-            id: post.id,
-            title: frontMatter.title || post.title,
-            tags: tags,
-            authors: [{ id: authorData.id }],
-            mobiledoc: mobiledoc,
-            feature_image: featuredImage
-          });
-          console.log('Post updated:', post);
-        } else {
-          console.log(`Post not found, creating new post with slug: ${slug}`);
-          const newPost = await adminApi.posts.add({
-            title: frontMatter.title || slug,
-            slug: slug,
-            tags: tags,
-            authors: [{ id: authorData.id }],
-            mobiledoc: mobiledoc,
-            feature_image: featuredImage
-          });
-          console.log('New post created:', newPost);
-        }
-      } catch (err) {
-        console.error('Error updating or creating post:', err);
+      if (post) {
+        console.log(`Post found, updating post with slug: ${slug}`);
+        // If post exists, update it
+        await adminApi.posts.edit({
+          id: post.id,
+          title: frontMatter.title || post.title,
+          tags: tags,
+          authors: [{ id: authorData.id }],
+          mobiledoc: mobiledoc,
+          feature_image: featuredImage
+        });
+        console.log('Post updated:', post);
+      } else {
+        console.log(`Post not found, creating new post with slug: ${slug}`);
+        // If post does not exist, create it
+        await adminApi.posts.add({
+          title: frontMatter.title || slug,
+          slug: slug,
+          tags: tags,
+          authors: [{ id: authorData.id }],
+          mobiledoc: mobiledoc,
+          feature_image: featuredImage
+        });
+        console.log('New post created:', slug);
       }
     }
   } catch (error) {
@@ -253,3 +249,4 @@ updateOrCreateArticles().catch(err => {
   console.error('Unhandled error:', err);
   process.exit(1);
 });
+

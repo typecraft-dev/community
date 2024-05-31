@@ -10,6 +10,8 @@ import matter from 'gray-matter';
 import fetch from 'node-fetch';
 import { DateTime } from 'luxon';
 import FormData from 'form-data';
+import { marked } from 'marked';
+import { JSDOM } from 'jsdom';
 
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
@@ -115,16 +117,6 @@ async function getAuthorData() {
   }
 }
 
-function convertMarkdownToMobiledoc(markdownContent) {
-  return JSON.stringify({
-    version: '0.3.1',
-    markups: [],
-    atoms: [],
-    cards: [['markdown', { cardName: 'markdown', markdown: markdownContent }]],
-    sections: [[10, 0]]
-  });
-}
-
 async function uploadImage(imagePath) {
   const formData = new FormData();
   formData.append('file', fs.createReadStream(imagePath));
@@ -139,6 +131,36 @@ async function uploadImage(imagePath) {
 
   const result = await response.json();
   return result.images[0].url;
+}
+
+async function processMarkdownImages(markdownContent, markdownFilePath) {
+  const dom = new JSDOM();
+  const document = dom.window.document;
+  const htmlContent = marked(markdownContent);
+  const parser = new dom.window.DOMParser();
+  const parsedHtml = parser.parseFromString(htmlContent, 'text/html');
+  const images = parsedHtml.querySelectorAll('img');
+  
+  for (const img of images) {
+    const src = img.getAttribute('src');
+    if (src && !src.startsWith('http')) {
+      const imagePath = path.resolve(path.dirname(markdownFilePath), src);
+      const uploadedImageUrl = await uploadImage(imagePath);
+      img.setAttribute('src', uploadedImageUrl);
+    }
+  }
+
+  return parsedHtml.body.innerHTML;
+}
+
+function convertHtmlToMobiledoc(htmlContent) {
+  return JSON.stringify({
+    version: '0.3.1',
+    markups: [],
+    atoms: [],
+    cards: [['html', { cardName: 'html', html: htmlContent }]],
+    sections: [[10, 0]]
+  });
 }
 
 async function updateOrCreateArticles() {
@@ -163,7 +185,9 @@ async function updateOrCreateArticles() {
       const tags = (frontMatter.tags || []).concat('#community');
       console.log(`Tags for post: ${tags}`);
 
-      const mobiledoc = convertMarkdownToMobiledoc(markdownContent);
+      // Process Markdown content for images and convert to HTML
+      const htmlContent = await processMarkdownImages(markdownContent, file);
+      const mobiledoc = convertHtmlToMobiledoc(htmlContent);
 
       // Validate and format published_at
       let publishedAt = frontMatter.published_at;

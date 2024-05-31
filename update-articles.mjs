@@ -78,7 +78,7 @@ async function getCommitAuthor() {
 async function findPostById(postId) {
     try {
         console.log(`Attempting to find post with ID: ${postId}`);
-        const post = await contentApi.posts.read({ id: postId });
+        const post = await adminApi.posts.read({ id: postId });
         console.log(`Post found by ID: ${JSON.stringify(post, null, 2)}`);
         return post;
     } catch (error) {

@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
+//import dotenv from 'dotenv';
+//dotenv.config();
 
 import GhostAdminAPI from '@tryghost/admin-api';
 import GhostContentAPI from '@tryghost/content-api';

@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import GhostAdminAPI from '@tryghost/admin-api';
 import GhostContentAPI from '@tryghost/content-api';
 import { execSync } from 'child_process';
@@ -24,7 +27,6 @@ async function getChangedFiles() {
     const repo = process.env.GITHUB_REPOSITORY;
     const sha = process.env.GITHUB_SHA;
 
-    // Check if the repository is shallow
     const isShallow = fs.existsSync('.git/shallow');
     if (isShallow) {
       console.log('Repository is shallow, fetching full history...');
@@ -112,6 +114,16 @@ async function getAuthorData() {
   }
 }
 
+function convertMarkdownToMobiledoc(markdownContent) {
+  return JSON.stringify({
+    version: '0.3.1',
+    markups: [],
+    atoms: [],
+    cards: [['markdown', { cardName: 'markdown', markdown: markdownContent }]],
+    sections: [[10, 0]]
+  });
+}
+
 async function updateOrCreateArticles() {
   try {
     const files = await getChangedFiles();
@@ -134,15 +146,7 @@ async function updateOrCreateArticles() {
       const tags = (frontMatter.tags || []).concat('#community');
       console.log(`Tags for post: ${tags}`);
 
-      const mobiledoc = JSON.stringify({
-        version: "0.3.1",
-        atoms: [],
-        cards: [],
-        markups: [],
-        sections: [
-          [1, "p", [[0, [], 0, markdownContent]]]
-        ]
-      });
+      const mobiledoc = convertMarkdownToMobiledoc(markdownContent);
 
       // Validate and format published_at
       let publishedAt = frontMatter.published_at;

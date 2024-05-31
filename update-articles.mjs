@@ -245,7 +245,7 @@ async function updateOrCreateArticles() {
           authors: [{ id: authorData.id }],
           mobiledoc: mobiledoc,
           feature_image: featuredImage,
-          updated_at: DateTime.now().toISO() // Ensure updated_at is in the correct format
+          updated_at: post.updated_at
         });
         console.log('Post updated:', post);
       } else {

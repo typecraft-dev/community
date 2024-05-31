@@ -12,8 +12,13 @@
   "dependencies": {
     "@tryghost/admin-api": "^1.13.12",
     "@tryghost/content-api": "^1.11.21",
+<<<<<<< Updated upstream
     "child_process": "^1.0.2",
     "fs": "^0.0.1-security",
+=======
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+>>>>>>> Stashed changes
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "jsdom": "^24.1.0",

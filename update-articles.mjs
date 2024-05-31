@@ -25,6 +25,14 @@ const contentApi = new GhostContentAPI({
   version: 'v5'
 });
 
+const lexicalConverter = require('@tryghost/kg-parser-plugins').lexical;
+
+async function convertHtmlToLexical(htmlContent) {
+  const dom = new JSDOM(htmlContent);
+  const lexicalContent = lexicalConverter(dom.window.document);
+  return JSON.stringify(lexicalContent);
+}
+
 async function getChangedFiles() {
   try {
     const repo = process.env.GITHUB_REPOSITORY;
@@ -45,7 +53,7 @@ async function getChangedFiles() {
     console.log(`Base SHA: ${baseSha}`);
 
     const diffOutput = execSync(`git diff --name-only ${baseSha} ${sha}`).toString().trim();
-    //console.log(`Changed files: ${diffOutput}`);
+    console.log(`Changed files: ${diffOutput}`);
 
     return diffOutput.split('\n').filter(file => file.startsWith('articles/') && file.endsWith('.md') && fs.existsSync(file));
   } catch (error) {
@@ -59,7 +67,7 @@ async function getCommitAuthor() {
     const repo = process.env.GITHUB_REPOSITORY;
     const sha = process.env.GITHUB_SHA;
 
-    //console.log(`Fetching commit data for SHA: ${sha}...`);
+    console.log(`Fetching commit data for SHA: ${sha}...`);
     const response = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
     const commitData = await response.json();
 
@@ -76,30 +84,30 @@ async function getCommitAuthor() {
 }
 
 async function findPostById(postId) {
-    try {
-        console.log(`Attempting to find post with ID: ${postId}`);
-        const post = await adminApi.posts.read({ id: postId });
-        console.log(`Post found by ID: ${post.id}`);
-        return post;
-    } catch (error) {
-        if (error.response) {
-            // API responded with a status code outside the range of 2xx
-            console.error(`Error response data: ${JSON.stringify(error.response.data, null, 2)}`);
-            console.error(`Error response status: ${error.response.status}`);
-            console.error(`Error response headers: ${JSON.stringify(error.response.headers, null, 2)}`);
-            if (error.response.status === 404) {
-                console.log(`Post not found for ID: ${postId}`);
-                return null;
-            }
-        } else if (error.request) {
-            // Request was made but no response received
-            console.error('No response received:', error.request);
-        } else {
-            // Something happened in setting up the request
-            console.error('Error setting up request:', error.message);
-        }
-        throw error;
+  try {
+    console.log(`Attempting to find post with ID: ${postId}`);
+    const post = await adminApi.posts.read({ id: postId });
+    console.log(`Post found by ID: ${JSON.stringify(post, null, 2)}`);
+    return post;
+  } catch (error) {
+    if (error.response) {
+      // API responded with a status code outside the range of 2xx
+      console.error(`Error response data: ${JSON.stringify(error.response.data, null, 2)}`);
+      console.error(`Error response status: ${error.response.status}`);
+      console.error(`Error response headers: ${JSON.stringify(error.response.headers, null, 2)}`);
+      if (error.response.status === 404) {
+        console.log(`Post not found for ID: ${postId}`);
+        return null;
+      }
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('No response received:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Error setting up request:', error.message);
     }
+    throw error;
+  }
 }
 
 async function getAuthorByEmail(email) {
@@ -170,7 +178,7 @@ async function processMarkdownImages(markdownContent, markdownFilePath) {
   const parser = new dom.window.DOMParser();
   const parsedHtml = parser.parseFromString(htmlContent, 'text/html');
   const images = parsedHtml.querySelectorAll('img');
-  
+
   for (const img of images) {
     const src = img.getAttribute('src');
     if (src && !src.startsWith('http')) {
@@ -211,7 +219,6 @@ async function updateOrCreateArticles() {
       const filePath = path.resolve(file);
       const slug = path.basename(file, '.md'); // Assuming file names can be used as slugs
       const fileContent = fs.readFileSync(filePath, 'utf8');
-      console.log(`File content\n\n\n\n: ${fileContent}`);
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
@@ -220,7 +227,7 @@ async function updateOrCreateArticles() {
 
       // Process Markdown content for images and convert to HTML
       const htmlContent = await processMarkdownImages(markdownContent, file);
-      const mobiledoc = convertHtmlToMobiledoc(htmlContent);
+      const lexicalContent = await convertHtmlToLexical(htmlContent);
 
       // Handle featured image URL or upload local image
       let featuredImage = frontMatter.featured_image || '';
@@ -237,22 +244,18 @@ async function updateOrCreateArticles() {
       }
 
       if (post) {
-        console.log(`Mobiledoc is: \n\n\n\n ${mobiledoc}`);
         console.log(`Post found, updating post with ID: ${post.id}`);
         // If post exists, update it
-        // capture result of edit request
-        const updatedPost = await adminApi.posts.edit({
+        await adminApi.posts.edit({
           id: post.id,
           title: frontMatter.title || post.title,
           tags: tags,
           authors: [{ id: authorData.id }],
-          mobiledoc: mobiledoc,
+          lexical: lexicalContent,
           feature_image: featuredImage,
           updated_at: post.updated_at
         });
-        // I don't think the update is working. Log out the response
-        console.log(`Updated post response: ${JSON.stringify(updatedPost)}`);
-        console.log('Post updated:', post.id);
+        console.log('Post updated:', post);
       } else {
         console.log(`Post not found, creating new post with slug: ${slug}`);
         // If post does not exist, create it
@@ -261,10 +264,10 @@ async function updateOrCreateArticles() {
           slug: slug,
           tags: tags,
           authors: [{ id: authorData.id }],
-          mobiledoc: mobiledoc,
+          lexical: lexicalContent,
           feature_image: featuredImage
         });
-        console.log('New post created:', newPost.id);
+        console.log('New post created:', newPost);
         // Update markdown file with postId
         frontMatter.postId = newPost.id;
         const updatedContent = matter.stringify({ content: markdownContent, data: frontMatter });

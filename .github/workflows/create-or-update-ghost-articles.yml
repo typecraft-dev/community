@@ -34,3 +34,16 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
 
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Commit and push changes
+        run: |
+          git add articles/*.md
+          git commit -m "Update markdown files with postId"
+          git push
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+

@@ -77,16 +77,17 @@ async function getCommitAuthor() {
 
 async function findPostBySlug(slug) {
   try {
-    // read by slug
-    const post = await contentApi.posts.read({ slug: ${slug}});
-    console.log(`Fetching post by slug: ${slug}`);
-    console.log('Post:', post);
+    const post = await contentApi.posts.read({ slug });
     return post;
   } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return null; // Post not found
+    }
     console.error('Error finding post by slug:', error);
     throw error;
   }
 }
+
 
 async function getAuthorByEmail(email) {
   try {

@@ -16,13 +16,13 @@ import { JSDOM } from 'jsdom';
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
   key: process.env.GHOST_ADMIN_API_KEY,
-  version: "v5.0"
+  version: 'v5.0'
 });
 
 const contentApi = new GhostContentAPI({
   url: process.env.GHOST_API_URL,
   key: process.env.GHOST_CONTENT_API_KEY,
-  version: "v5"
+  version: 'v5'
 });
 
 async function getChangedFiles() {
@@ -47,7 +47,7 @@ async function getChangedFiles() {
     const diffOutput = execSync(`git diff --name-only ${baseSha} ${sha}`).toString().trim();
     console.log(`Changed files: ${diffOutput}`);
 
-    return diffOutput.split('\n').filter(file => file.startsWith('articles/') && file.endsWith('.md'));
+    return diffOutput.split('\n').filter(file => file.startsWith('articles/') && file.endsWith('.md') && fs.existsSync(file));
   } catch (error) {
     console.error('Error getting changed files:', error);
     throw error;
@@ -75,12 +75,17 @@ async function getCommitAuthor() {
   }
 }
 
-async function findPostBySlug(slug) {
+async function findPostById(postId) {
   try {
-    const posts = await contentApi.posts.browse({ filter: `slug:${slug}` });
-    return posts.length ? posts[0] : null;
+    const post = await contentApi.posts.read({ id: postId });
+    console.log(`Post found by ID: ${JSON.stringify(post)}`);
+    return post;
   } catch (error) {
-    console.error('Error finding post by slug:', error);
+    if (error.response && error.response.status === 404) {
+      console.log(`Post not found for ID: ${postId}`);
+      return null; // Post not found
+    }
+    console.error('Error finding post by ID:', error.message);
     throw error;
   }
 }
@@ -188,10 +193,12 @@ async function updateOrCreateArticles() {
     }
     console.log(`Author data: ${JSON.stringify(authorData)}`);
 
+    let filesToCommit = [];
     for (const file of files) {
       console.log(`Processing file: ${file}`);
+      const filePath = path.resolve(file);
       const slug = path.basename(file, '.md'); // Assuming file names can be used as slugs
-      const fileContent = fs.readFileSync(file, 'utf8');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
@@ -210,37 +217,53 @@ async function updateOrCreateArticles() {
         console.log(`Uploaded featured image: ${featuredImage}`);
       }
 
-      try {
-        // Try to find the post by slug
-        let post = await findPostBySlug(slug);
-        if (post) {
-          console.log(`Post found, updating post with slug: ${slug}`);
-
-          // If post exists, update it
-          post = await adminApi.posts.edit({
-            id: post.id,
-            title: frontMatter.title || post.title,
-            tags: tags,
-            authors: [{ id: authorData.id }],
-            mobiledoc: mobiledoc,
-            feature_image: featuredImage
-          });
-          console.log('Post updated:', post);
-        } else {
-          console.log(`Post not found, creating new post with slug: ${slug}`);
-          const newPost = await adminApi.posts.add({
-            title: frontMatter.title || slug,
-            slug: slug,
-            tags: tags,
-            authors: [{ id: authorData.id }],
-            mobiledoc: mobiledoc,
-            feature_image: featuredImage
-          });
-          console.log('New post created:', newPost);
-        }
-      } catch (err) {
-        console.error('Error updating or creating post:', err);
+      // Find existing post by postId or slug
+      let post = null;
+      if (frontMatter.postId) {
+        post = await findPostById(frontMatter.postId);
       }
+
+      if (post) {
+        console.log(`Post found, updating post with ID: ${post.id}`);
+        // If post exists, update it
+        await adminApi.posts.edit({
+          id: post.id,
+          title: frontMatter.title || post.title,
+          tags: tags,
+          authors: [{ id: authorData.id }],
+          mobiledoc: mobiledoc,
+          feature_image: featuredImage
+        });
+        console.log('Post updated:', post);
+      } else {
+        console.log(`Post not found, creating new post with slug: ${slug}`);
+        // If post does not exist, create it
+        const newPost = await adminApi.posts.add({
+          title: frontMatter.title || slug,
+          slug: slug,
+          tags: tags,
+          authors: [{ id: authorData.id }],
+          mobiledoc: mobiledoc,
+          feature_image: featuredImage
+        });
+        console.log('New post created:', newPost);
+        // Update markdown file with postId
+        frontMatter.postId = newPost.id;
+        const updatedContent = matter.stringify({ content: markdownContent, data: frontMatter });
+        fs.writeFileSync(filePath, updatedContent, 'utf8');
+        console.log(`Updated markdown file with postId: ${newPost.id}`);
+        filesToCommit.push(file);
+      }
+    }
+
+    // Commit and push changes if there are any updated files
+    if (filesToCommit.length > 0) {
+      execSync('git config --global user.name "github-actions[bot]"');
+      execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
+      execSync('git add articles/*.md');
+      execSync('git commit -m "Update markdown files with postId"');
+      execSync('git push');
+      console.log('Changes committed and pushed to the repository.');
     }
   } catch (error) {
     console.error('Error in updateOrCreateArticles:', error);

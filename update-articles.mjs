@@ -45,7 +45,7 @@ async function getChangedFiles() {
     console.log(`Base SHA: ${baseSha}`);
 
     const diffOutput = execSync(`git diff --name-only ${baseSha} ${sha}`).toString().trim();
-    console.log(`Changed files: ${diffOutput}`);
+    //console.log(`Changed files: ${diffOutput}`);
 
     return diffOutput.split('\n').filter(file => file.startsWith('articles/') && file.endsWith('.md') && fs.existsSync(file));
   } catch (error) {
@@ -59,7 +59,7 @@ async function getCommitAuthor() {
     const repo = process.env.GITHUB_REPOSITORY;
     const sha = process.env.GITHUB_SHA;
 
-    console.log(`Fetching commit data for SHA: ${sha}...`);
+    //console.log(`Fetching commit data for SHA: ${sha}...`);
     const response = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
     const commitData = await response.json();
 
@@ -211,6 +211,7 @@ async function updateOrCreateArticles() {
       const filePath = path.resolve(file);
       const slug = path.basename(file, '.md'); // Assuming file names can be used as slugs
       const fileContent = fs.readFileSync(filePath, 'utf8');
+      console.log(`File content: ${fileContent}`);
       const { data: frontMatter, content: markdownContent } = matter(fileContent);
 
       // Ensure the tag #community is always included
@@ -247,7 +248,7 @@ async function updateOrCreateArticles() {
           feature_image: featuredImage,
           updated_at: post.updated_at
         });
-        console.log('Post updated:', post);
+        console.log('Post updated:', post.id);
       } else {
         console.log(`Post not found, creating new post with slug: ${slug}`);
         // If post does not exist, create it
@@ -259,7 +260,7 @@ async function updateOrCreateArticles() {
           mobiledoc: mobiledoc,
           feature_image: featuredImage
         });
-        console.log('New post created:', newPost);
+        console.log('New post created:', newPost.id);
         // Update markdown file with postId
         frontMatter.postId = newPost.id;
         const updatedContent = matter.stringify({ content: markdownContent, data: frontMatter });

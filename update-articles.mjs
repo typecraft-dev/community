@@ -9,6 +9,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import fetch from 'node-fetch';
 import { DateTime } from 'luxon';
+import FormData from 'form-data';
 
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
@@ -124,6 +125,22 @@ function convertMarkdownToMobiledoc(markdownContent) {
   });
 }
 
+async function uploadImage(imagePath) {
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream(imagePath));
+
+  const response = await fetch(`${process.env.GHOST_API_URL}/ghost/api/v5/admin/images/upload/`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Ghost ${process.env.GHOST_ADMIN_API_KEY}`,
+    },
+    body: formData,
+  });
+
+  const result = await response.json();
+  return result.images[0].url;
+}
+
 async function updateOrCreateArticles() {
   try {
     const files = await getChangedFiles();
@@ -158,6 +175,14 @@ async function updateOrCreateArticles() {
         }
       }
 
+      // Handle featured image URL or upload local image
+      let featuredImage = frontMatter.featured_image || '';
+      if (featuredImage && !featuredImage.startsWith('http')) {
+        const imagePath = path.resolve(path.dirname(file), featuredImage);
+        featuredImage = await uploadImage(imagePath);
+        console.log(`Uploaded featured image: ${featuredImage}`);
+      }
+
       try {
         // Try to find the post by slug
         let post = await findPostBySlug(slug);
@@ -172,7 +197,8 @@ async function updateOrCreateArticles() {
             authors: [{ id: authorData.id }],
             mobiledoc: mobiledoc,
             published_at: publishedAt,
-            updated_at: post.updated_at
+            updated_at: post.updated_at,
+            feature_image: featuredImage
           });
           console.log('Post updated:', post);
         } else {
@@ -183,7 +209,8 @@ async function updateOrCreateArticles() {
             tags: tags,
             authors: [{ id: authorData.id }],
             mobiledoc: mobiledoc,
-            published_at: publishedAt
+            published_at: publishedAt,
+            feature_image: featuredImage
           });
           console.log('New post created:', newPost);
         }

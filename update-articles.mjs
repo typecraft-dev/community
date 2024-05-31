@@ -9,8 +9,6 @@ import path from 'path';
 import matter from 'gray-matter';
 import fetch from 'node-fetch';
 import { DateTime } from 'luxon';
-import marked from 'marked';
-import { JSDOM } from 'jsdom';
 
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
@@ -117,26 +115,12 @@ async function getAuthorData() {
 }
 
 function convertMarkdownToMobiledoc(markdownContent) {
-  const htmlContent = marked(markdownContent);
-  const dom = new JSDOM(htmlContent);
-  const doc = dom.window.document;
-  const sections = [];
-
-  doc.body.childNodes.forEach(node => {
-    if (node.nodeType === node.ELEMENT_NODE) {
-      if (node.tagName === 'P') {
-        sections.push([1, 'p', [[0, [], 0, node.textContent]]]);
-      }
-      // Add more tag conversions as needed
-    }
-  });
-
   return JSON.stringify({
     version: '0.3.1',
-    atoms: [],
-    cards: [],
     markups: [],
-    sections: sections,
+    atoms: [],
+    cards: [['markdown', { cardName: 'markdown', markdown: markdownContent }]],
+    sections: [[10, 0]]
   });
 }
 

@@ -10,3 +10,4 @@ postId: 6659edaecd509e00014b9a79
 
 Welcome to the Typecraft Community! We're really excited about the launch of this platform. More importantly, we're excited to have you here. So take a look around and get comfortable. We'd love to learn from each other and level up together.
 
+Or at least, that's the idea.

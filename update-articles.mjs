@@ -77,9 +77,10 @@ async function getCommitAuthor() {
 
 async function findPostBySlug(slug) {
   try {
-    const posts = await contentApi.posts.browse({ limit: 1, filter: `slug:${slug}` });
-    console.log(`Found posts with slug ${slug}: ${posts.length}`);
-    return posts.length ? posts[0] : null;
+    const post = await contentApi.posts.read({ slug: slug }); 
+    console.log(`Fetching post by slug: ${slug}`);
+    console.log('Post:', post);
+    return post;
   } catch (error) {
     console.error('Error finding post by slug:', error);
     throw error;

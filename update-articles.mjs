@@ -12,7 +12,8 @@ import { DateTime } from 'luxon';
 import FormData from 'form-data';
 import { marked } from 'marked';
 import { JSDOM } from 'jsdom';
-import { lexical } from '@tryghost/kg-parser-plugins';
+
+import { htmlToLexical } from '@tryghost/kg-html-to-lexical';
 
 const adminApi = new GhostAdminAPI({
   url: process.env.GHOST_API_URL,
@@ -27,8 +28,8 @@ const contentApi = new GhostContentAPI({
 });
 
 async function convertHtmlToLexical(htmlContent) {
-    const dom = new JSDOM(htmlContent);
-    const lexicalContent = lexical(dom.window.document);
+    console.log("html content\n\n\n", htmlContent);
+    const lexicalContent = htmlToLexical(htmlContent);
     return JSON.stringify(lexicalContent);
 }
 

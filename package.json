@@ -12,6 +12,7 @@
   "dependencies": {
     "@tryghost/admin-api": "^1.13.12",
     "@tryghost/content-api": "^1.11.21",
+    "@tryghost/kg-html-to-lexical": "^1.1.1",
     "@tryghost/kg-parser-plugins": "^4.1.0",
     "axios": "^1.7.2",
     "child_process": "^1.0.2",

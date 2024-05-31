@@ -6,5 +6,5 @@ author: robert@typecraft.dev
 featured_image: null
 ---
 
-The Beene.
+The Beene, yo.
 

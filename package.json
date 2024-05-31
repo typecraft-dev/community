@@ -15,6 +15,7 @@
     "axios": "^1.7.2",
     "child_process": "^1.0.2",
     "dotenv": "^16.4.5",
+    "form-data": "^4.0.0",
     "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",

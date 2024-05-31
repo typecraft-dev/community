@@ -77,7 +77,7 @@ async function getCommitAuthor() {
 
 async function findPostBySlug(slug) {
   try {
-    const post = await contentApi.posts.read({ slug });
+    const post = await contentApi.posts.read({ slug: slug });
     return post;
   } catch (error) {
     if (error.response && error.response.status === 404) {

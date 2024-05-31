@@ -236,15 +236,16 @@ async function updateOrCreateArticles() {
       }
 
       if (post) {
-        console.log(`Post found, updating post with ID: ${post.id}`);
+        console.log(`Post found, updating post with ID: ${post.posts[0].id}`);
         // If post exists, update it
         await adminApi.posts.edit({
-          id: post.id,
-          title: frontMatter.title || post.title,
+          id: post.posts[0].id,
+          title: frontMatter.title || post.posts[0].title,
           tags: tags,
           authors: [{ id: authorData.id }],
           mobiledoc: mobiledoc,
-          feature_image: featuredImage
+          feature_image: featuredImage,
+          updated_at: DateTime.now().toISO() // Ensure updated_at is in the correct format
         });
         console.log('Post updated:', post);
       } else {
@@ -282,6 +283,8 @@ async function updateOrCreateArticles() {
     throw error;
   }
 }
+
+
 
 updateOrCreateArticles().catch(err => {
   console.error('Unhandled error:', err);

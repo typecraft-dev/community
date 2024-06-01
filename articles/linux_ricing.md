@@ -2,7 +2,8 @@
 title: The art of Linux Ricing
 tags: ["Linux", "Ricing", "Tiling Windows Manager"]
 author: robert@typecraft.dev
-featured_image: "https://github.com/MeledoJames/awesome-setup/blob/Lavender/images/1.png"
+featured_image: "https://github.com/MeledoJames/awesome-setup/blob/Lavender/images/1.png?raw=true"
+postId: 665a646dcd509e00014b9b61
 ---
 
 

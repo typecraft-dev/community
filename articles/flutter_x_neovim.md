@@ -6,7 +6,8 @@ I mean Android Studio is awesome IDE, but it won't let us tweet "I use neovim". 
 ## LSP Configration
 Mason natively do not support any dart language server protocol, because a dart lsp called dartls is configured on your local machine when you install flutter. In order to utilize the dartls, we pass some extra commands in our `lsp-config.nvim`:
 
-`return {
+```
+return {
   {
     "williamboman/mason.nvim",
     config = function()
@@ -42,12 +43,14 @@ Mason natively do not support any dart language server protocol, because a dart 
       vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, {})
     end,
   },
-}`
+}
+```
 
 ## Flutter tools
 We want all the capabilities that Android studio provides i.e. `auto restart`, `auto start devtools`, `color previews`. In order to enable them we have to install `akinsho/flutter-tools.nvim`
 
-`return {
+```
+return {
 	"akinsho/flutter-tools.nvim",
 	lazy = false,
 	dependencies = {
@@ -78,7 +81,8 @@ We want all the capabilities that Android studio provides i.e. `auto restart`, `
 			},
 		})
 	end,
-}`
+}
+```
 
 *Note : I have added shortcuts for most used Vim commands.*
 
@@ -87,7 +91,8 @@ You can use flutter tools from `Telescope`, all you need to do is just add follo
 
 -`require("telescope").load_extension("flutter")`
 
-`return {
+```
+return {
   {
     "nvim-telescope/telescope.nvim",
     tag = "0.1.5",
@@ -112,7 +117,8 @@ You can use flutter tools from `Telescope`, all you need to do is just add follo
       require("telescope").load_extension("flutter")
     end,
   },
-}`
+}
+```
 
 ## Screenshots
 

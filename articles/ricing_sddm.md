@@ -46,7 +46,19 @@ There are tons of themes available for sddm, you can find them by just searching
 
 ## Applying themes to sddm
 
+After installing a theme, you would need to apply the theme (duh). You can do this 3 ways, use a script, do it manually, do it kde way (for kde folks).
+
 ### Script
+
+You don't need to install the theme because the script does it for you. The script is on github (a star would be appreciated): https://github.com/leanghok120/Install-Sddm-Theme
+
+```sh
+git clone git@github.com:leanghok120/Install-Sddm-Theme.git
+cd Install-Sddm-Theme
+./install-theme.sh
+```
+
+After the script is finished, reboot your system and you should see a minimal display manager after booting into arch.
 
 ### Manual
 

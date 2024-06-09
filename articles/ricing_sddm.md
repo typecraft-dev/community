@@ -9,8 +9,12 @@ featured_image: "https://github.com/stepanzubkov/where-is-my-sddm-theme/blob/mai
 
 ## Tables Of Contents
 
-- Test olololko
-- Test2 okokkokkokokolololollo
-- Test3 olololko
+- [Installing sddm](#installing-sddm)
+- [Installing a theme](#installing-a-theme)
+- [Applying theme to sddm](#applying-theme-to-sddm)
+    - [Script](#script)
+    - [Manual](#manual)
+    - [Kde](#kde)
+- [Acknowledgement](#acknowledgement)
 
-## BLHAHLl
+## Installing Sddm

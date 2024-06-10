@@ -15,7 +15,6 @@ featured_image: "https://github.com/stepanzubkov/where-is-my-sddm-theme/blob/mai
 - [Applying themes to sddm](#applying-themes-to-sddm)
     - [Script](#script)
     - [Manual](#manual)
-    - [Kde](#kde)
 - [Acknowledgement](#acknowledgement)
 
 ## What is sddm?
@@ -46,7 +45,7 @@ There are tons of themes available for sddm, you can find them by just searching
 
 ## Applying themes to sddm
 
-After installing a theme, you would need to apply the theme (duh). You can do this 3 ways, use a script, do it manually, do it kde way (for kde folks).
+After installing a theme, you would need to apply the theme (duh). You can do this 2 ways, use a script, do it manually.
 
 ### Script
 
@@ -107,14 +106,9 @@ Well, if you are having problems with the script installation, you can do it man
     
   We finished our sddm ricing in the manual way.
 
-### Kde
-
-@T.crow edit here
-
 ## Acknowledgement
 
-After editing, you can add your name here
+Thanks to these wonderful people who helped with this article
 
 - Leanghok (Article structure and scripts)
-- Kyup (Intallation guide in the manual way)
-- Name (work)
+- Kyup (Installation guide the manual way)

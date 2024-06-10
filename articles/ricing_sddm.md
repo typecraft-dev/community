@@ -74,11 +74,10 @@ Well, if you are having problems with the script installation, you can do it man
       - Now we can run the ```sudo ./install_qt5.sh``` this need to be run in sudo, because need access to a directory in our files, which cannot reach if it doesn't have privileges.
       - We can preview the default theme of where is my sddm theme, with the following command:
         - ```sddm-greeter --test-mode --theme [folder location]```
-          **Note:** You need to change "[folder location]", for example ```/usr/share/sddm/themes/where_is_my_sddm_theme_qt5```
+        - **Note:** You need to change "[folder location]", for example ```/usr/share/sddm/themes/where_is_my_sddm_theme_qt5```
 
 2. How to set "Where is my sddm theme" as the current sddm theme:
-
-  **Note:** We are going to change the default file of sddm, it's not a good practice but it's the only place we found it.
+  - **Note:** We are going to change the default file of sddm, it's not a good practice but it's the only place we found it.
   - First we are going to open the directory where the sddm config file is, so execute this on your terminal:
     - ```cd /usr/lib/sddm/sddm.conf.d/```
     - Once we are in this directory just open the config file:

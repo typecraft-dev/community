@@ -62,7 +62,50 @@ After the script is finished, reboot your system and you should see a minimal di
 
 ### Manual
 
-@kyup edit here
+Well, if you are having problems with the script installation, you can do it manually, so let's see how.
+
+1. How to download, install and preview "Where is my sddm theme"
+
+  - First we need to clone the original repository, so, how we do this?
+    - Open your terminal and we are going to open a directory to not let the repository be where we dont want.
+    - Once we are in the desired directory we can proceed to clone of the repository.
+        - ```git clone https://github.com/stepanzubkov/where-is-my-sddm-theme```
+        -Let's go inside the clone directory with ```cd where-is-my-sddm-theme```
+      - Now we can run the ```sudo ./install_qt5.sh``` this need to be run in sudo, because need access to a directory in our files, which cannot reach if it doesn't have privileges.
+      - We can preview the default theme of where is my sddm theme, with the following command:
+        - ```sddm-greeter --test-mode --theme [folder location]```
+        - **Note:** You need to change "[folder location]", for example ```/usr/share/sddm/themes/where_is_my_sddm_theme_qt5```
+
+2. How to set "Where is my sddm theme" as the current sddm theme:
+  - **Note:** We are going to change the default file of sddm, it's not a good practice but it's the only place we found it.
+  - First we are going to open the directory where the sddm config file is, so execute this on your terminal:
+    - ```cd /usr/lib/sddm/sddm.conf.d/```
+    - Once we are in this directory just open the config file:
+      - ```sudo vim default.conf```
+      - Here you only need to change a line, so be careful and don't edit anything else.
+      - Inside vim you can use ```/Current``` to search for the line will be editing, so once you found it just change after the ```=``` and just add ```where_is_my_sddm_theme_qt5```
+        - After this just press ```ESC``` and write ```:wq```. 
+      - At this point if you reboot you will see the default theme of where is my sddm theme.
+
+3. So let's change the theme of where is my sddm theme
+
+  - The first thing we have to do is open the where_is_my_sddm_theme directory
+    - In our terminal execute the following commmand ```cd /usr/share/sddm/themes/where_is_my_sddm_theme_qt5/example_configs```.
+    - Once we are in this directory you will have some themes to choose you can see the themes in the original repository.
+        - For this example we will be using the tree theme
+        - Before the next step just verify that you are in the ```example_configs``` directory.
+        - So we are going to execute the next commands:
+            ```sudo cp tree.conf ../theme.conf```
+            And for the Background Image we execute the following command:
+            ```sudo cp tree.png ../tree.png```
+    - There is a common problem with the background Image which can have some white margins with the screen, so to fix this we have to do the following step.
+      - In the directory ```cd /usr/share/sddm/themes/where_is_my_sddm_theme_qt5/``` we need to edit the file named ```theme.conf```, to do this we use *vim*.
+      - So lets execute ```sudo vim theme.conf```
+      - Once we are in this file we need to add the following line:
+         ```backgroundMode=fill```
+      - After this we have finish, so you can do the same steps for the other themes.
+    
+  We finished our sddm ricing in the manual way.
 
 ### Kde
 
@@ -73,5 +116,5 @@ After the script is finished, reboot your system and you should see a minimal di
 After editing, you can add your name here
 
 - Leanghok (Article structure and scripts)
-- Name (work)
+- Kyup (Intallation guide in the manual way)
 - Name (work)

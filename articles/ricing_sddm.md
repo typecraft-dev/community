@@ -70,7 +70,7 @@ Well, if you are having problems with the script installation, you can do it man
     - Open your terminal and we are going to open a directory to not let the repository be where we dont want.
     - Once we are in the desired directory we can proceed to clone of the repository.
         - ```git clone https://github.com/stepanzubkov/where-is-my-sddm-theme```
-        -Let's go inside the clone directory with ```cd wheres-is-my-sddm-theme```
+        -Let's go inside the clone directory with ```cd where-is-my-sddm-theme```
       - Now we can run the ```sudo ./install_qt5.sh``` this need to be run in sudo, because need access to a directory in our files, which cannot reach if it doesn't have privileges.
       - We can preview the default theme of where is my sddm theme, with the following command:
         - ```sddm-greeter --test-mode --theme [folder location]```
@@ -83,7 +83,7 @@ Well, if you are having problems with the script installation, you can do it man
     - Once we are in this directory just open the config file:
       - ```sudo vim default.conf```
       - Here you only need to change a line, so be careful and don't edit anything else.
-      - Inside vim you can use ```/Current``` to search for the line will be editing, so once you found it just change after the ```=``` and just add ```wheres_my_sddm_theme_qt5```
+      - Inside vim you can use ```/Current``` to search for the line will be editing, so once you found it just change after the ```=``` and just add ```where_is_my_sddm_theme_qt5```
         - After this just press ```ESC``` and write ```:wq```. 
       - At this point if you reboot you will see the default theme of where is my sddm theme.
 

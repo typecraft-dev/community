@@ -116,5 +116,5 @@ Well, if you are having problems with the script installation, you can do it man
 After editing, you can add your name here
 
 - Leanghok (Article structure and scripts)
-- Name (work)
+- Kyup (Intallation guide in the manual way)
 - Name (work)

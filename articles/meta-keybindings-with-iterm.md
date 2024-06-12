@@ -1,7 +1,7 @@
 ---
 title: Meta keybindings with iTerm
 tags: ["iTerm", "Meta Keys", "Tmux", "Neovim"]
-author: "hey@mthomps4.com"
+author: "robert@typecraft.dev"
 featured_image: "https://github.com/mthomps4/blog-posts/blob/main/posts/iterm-meta-keys/images/featured-alt.jpg?raw=true"
 ---
 

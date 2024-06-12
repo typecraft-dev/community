@@ -2,7 +2,7 @@
 title: Restore tmux sessions with tmux-continuum
 tags:
   ["iTerm", "tpm", "Tmux", "tmux sessions", "tmux-resurrect", "tmux-continuum"]
-author: "hey@mthomps4.com"
+author: Robert@typecraft.dev
 featured_image: "https://github.com/mthomps4/blog-posts/blob/main/posts/iterm-meta-keys/images/featured-alt.jpg?raw=true"
 ---
 

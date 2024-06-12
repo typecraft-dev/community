@@ -1,7 +1,7 @@
 ---
 title: "Setup Your Monitors with xrandr and arandr in i3"
 tags: ["xrandr", "arandr", "setup", "monitors"] 
-author: "ricardominamendes@gmail.com"
+author: "robert@typecraft.dev"
 featured_image: ""
 ---
 

@@ -1,18 +1,19 @@
 ---
 title: "Flutter x Neovim"
 tags: ["flutter", "dart", "neovim"] 
-author: "es.rajatyadav@gmail.com"
+author: "robert@typecraft.dev"
 featured_image: "https://github.com/laggedskapari/community/assets/53974841/345fabc4-23fe-4cac-a79f-a107a84576f9"
 
 ---
 
 ## Introduction 
-I mean Android Studio is an awesome IDE, but one of the major drawback is that it won't let us tweet "I use neovim, btw". Now, enough introduction Let's start with the setup.
+Android Studio is an awesome IDE, but one of the major drawbacks is that it won't let us tweet "I use neovim, btw". Let's do what's necessary to keep that nerd cred. 
 
 ## LSP Configration
-Mason natively do not support any dart language server protocol, because a dart lsp called dartls is configured on your local machine when you install flutter. In order to utilize the `dartls`, we pass some extra commands in our `lsp-config.nvim`:
+Mason does not natively support **any** dart language server protocol. However, when you install flutter, a dart lsp called `dartls` is configured. The trick is we need to add some configuration in our `lsp-config.nvim` file. 
 
-```
+
+```lua
 return {
   {
     "williamboman/mason.nvim",
@@ -53,9 +54,9 @@ return {
 ```
 
 ## Flutter tools
-Now, we want all the capabilities that Android studio provides us such as `auto restart`, `auto start devtools`, `color previews`. In order to enable them we have to install `akinsho/flutter-tools.nvim`
+Now, we want all the capabilities that Android studio provides us, such as `auto restart`, `auto start devtools`, `color previews`. To enable them, we have to install `akinsho/flutter-tools.nvim`. I'd recommend creating a new lua file specifically for that. 
 
-```
+```lua
 return {
   "akinsho/flutter-tools.nvim",
   lazy = false,
@@ -93,7 +94,7 @@ return {
 *Note : I have added shortcuts for most used Vim commands for flutter tools (you can remap them according to your comfort).*
 
 ## Telescope 
-You can use flutter tools from `Telescope`, all you need to do is just add following to you telescope config file.
+You can use flutter tools from `Telescope`. All you need to do is just add following to your telescope config file.
 
 - `require("telescope").load_extension("flutter")`
 
@@ -120,7 +121,7 @@ return {
         },
       })
       require("telescope").load_extension("ui-select")
-      require("telescope").load_extension("flutter")
+      *require("telescope").load_extension("flutter")*
     end,
   },
 }
@@ -132,9 +133,8 @@ return {
 ![image](https://github.com/laggedskapari/community/assets/53974841/05303cff-9a16-46b0-94c4-cd74deb5bf0e)
 
 ## Conclusion 
-Now, you are all set for you flutter development needs, you can add more features from `akinsho/flutter-tools` repository as you require them.
+Now, you are all set for you flutter development needs. You can add more features from `akinsho/flutter-tools` repository as you require them.
 PS - If you want to clone my Neovim setup, you can clone my `dotfiles` [laggedskapari/.config](https://github.com/laggedskapari/.config.git)
-
 
 
 

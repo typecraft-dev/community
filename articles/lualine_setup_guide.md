@@ -1,3 +1,11 @@
+---
+title: "Lualine - Setup Guide"
+tags: ["neovim", "lua"] 
+author: "es.rajatyadav@gmail.com"
+featured_image: "![Lualine](https://github.com/laggedskapari/community/assets/53974841/4a81d55a-101a-431b-8df6-8da95a28bd79)"
+---
+
+
 # Lualine - A complete guide
 Let's be honest, we all want a cool looking neovim setup and statusline is one major essence of it. But the problem is, we have to choose from pre-designed statusline, which lacks our own touch and getting to figure out how to design it and making it our own is pure pain.
 
@@ -14,6 +22,12 @@ If You are a newbie, I will recommend going through [Typecraft's Neovim for noob
 ## Understanding lualine
 
 Lualine is divided in six sections i.e. `a`, `b`, `c` (left) - `x`, `y`, `z` (right).
+
+```text
++-------------------------------------------------+
+| A | B | C                             X | Y | Z |
++-------------------------------------------------+
+```
 
 These sections are placeholder for the components that we want to put on the statusline.
 
@@ -610,3 +624,7 @@ return {
   end,
 }
 ```
+## Screenshots
+![image](https://github.com/laggedskapari/community/assets/53974841/89af91fd-7ce2-4996-befd-a9031601fa12)
+![image](https://github.com/laggedskapari/community/assets/53974841/f8687f59-e6a0-4add-86c6-2d9f4bee6da7)
+

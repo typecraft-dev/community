@@ -1,24 +1,21 @@
 # Lualine - A complete guide
-Let's be honest, we all want a cool looking neovim setup and statusline is one major essence of it. But the problem is, we have to choose from pre-designed statusline, which lacks our own touch and getting to figure out how to design it and making it our own.
+Let's be honest, we all want a cool looking neovim setup and statusline is one major essence of it. But the problem is, we have to choose from pre-designed statusline, which lacks our own touch and getting to figure out how to design it and making it our own is pure pain.
 
 What if there was a easier way ?, Well I mean there is (that is why is I'm writing this article, otherwise it is pretty lame to mention it) and It is called -
 
 ## Lualine
 
-It is a blazingly fast and easy to configure Neovim statusline written in lua. Well, this pretty much defines itself.
-
-
-But this is not what we are interested in, we want to created our own statusline from scratch.
+It is a blazingly fast and easy to configure Neovim statusline written in lua. Well, this pretty much defines itself. But this is not what we are interested in, we want to created our own statusline from scratch.
 
 ## Installation
 
-If You are newbie, I will recommend going through [Typecraft's Neovim for noobs series](https://www.youtube.com/watch?v=zHTeCSVAFNY&list=PLsz00TDipIffreIaUNk64KxTIkQaGguqn).
+If You are a newbie, I will recommend going through [Typecraft's Neovim for noobs series](https://www.youtube.com/watch?v=zHTeCSVAFNY&list=PLsz00TDipIffreIaUNk64KxTIkQaGguqn).
 
 ## Understanding lualine
 
 Lualine is divided in six sections i.e. `a`, `b`, `c` (left) - `x`, `y`, `z` (right).
 
-These are placeholder for the components that we want to put on the statusline.
+These sections are placeholder for the components that we want to put on the statusline.
 
 ```
   lualine_a = {}
@@ -62,6 +59,8 @@ local function helloWorld()
 end
 ```
 Now, all we did is create a lua `function` which returns 'Hello World' and this is all you need to create a custom component, just make a function which returns a string value.
+
+*Note: I'll show exactly how you can use custom components with muc more complex example.*
 
 ## Component Options 
 Component options can change the way a component behave. There are two kinds of options:
@@ -107,7 +106,7 @@ local colors = {
   red = "#ec5f67",
 }
 
-
+-- Colors for different modes.
 local mode_color = {
   n = colors.red,
   i = colors.green,
@@ -145,6 +144,8 @@ local conditions = {
   end,
 }
 
+-- Custom component to get current github username.
+
 local getGithubUsername = function()
   local handle = io.popen("git config user.name")
   local result = " " .. handle:read("*a")
@@ -158,6 +159,7 @@ local config = {
     component_separators = "",
     section_separators = "",
     theme = {
+
       -- We are going to use lualine_c an lualine_x as left and
       -- right section. Both are highlighted by c theme .  So we
       -- are just setting default looks o statusline
@@ -247,7 +249,6 @@ insert_left({
   symbols = { error = " ", warn = " ", info = " ", hint = " " },
   colored = true,
   diagnostics_color = {
-    -- Same values as the general color option can be used here.
     error = { fg = colors.red }, -- Changes diagnostics' error color.
     warn = { fg = colors.yellow }, -- Changes diagnostics' warn color.
     info = { fg = colors.cyan }, -- Changes diagnostics' info color.
@@ -281,7 +282,7 @@ insert_left({
 }
 ```
 
-1. LSP Name
+1. LSP Name (custom component that get us current LSP name we are using, I was taking about this earlier).
 ```
 insert_right({
   function()
@@ -308,7 +309,6 @@ insert_right({
 ```
 insert_right({
   getGithubUsername,
-  icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
   color = { fg = colors.cyan },
 })
 ```
@@ -505,7 +505,6 @@ insert_left({
   symbols = { error = " ", warn = " ", info = " ", hint = " " },
   colored = true,
   diagnostics_color = {
-    -- Same values as the general color option can be used here.
     error = { fg = colors.red }, -- Changes diagnostics' error color.
     warn = { fg = colors.yellow }, -- Changes diagnostics' warn color.
     info = { fg = colors.cyan }, -- Changes diagnostics' info color.
@@ -555,7 +554,6 @@ insert_left({
 })
 
 insert_right({
-  -- Lsp server name .
   function()
     local msg = "No Active Lsp"
     local buf_ft = vim.api.nvim_buf_get_option(0, "filetype")
@@ -577,7 +575,6 @@ insert_right({
 
 insert_right({
   getGithubUsername,
-  icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
   color = { fg = colors.cyan },
 })
 

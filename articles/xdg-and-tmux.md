@@ -23,7 +23,8 @@ If you use [tmux](https://learn.typecraft.dev/tmux-for-newbs/) then hopefully yo
 `tmux.conf` file is located somewhere like `$HOME/.config/tmux/tmux.conf`,
 because you are using the [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html).
 
-<a href="https://imgflip.com/i/8u0tpg"><img src="https://i.imgflip.com/8u0tpg.jpg" title="made at imgflip.com"/></a><div><a href="https://imgflip.com/memegenerator">from Imgflip Meme Generator</a></div>
+<a href="https://imgflip.com/i/8u0tpg"><img src="https://i.imgflip.com/8u0tpg.jpg" title="made at imgflip.com"
+alt="Meme of a smug pre-teen wearing shades and saying \"How I feel when my dotfiles are in ~/.config\""/></a><div><a href="https://imgflip.com/memegenerator">from Imgflip Meme Generator</a></div>
 
 I'm told that is what all the cool kids do.
 

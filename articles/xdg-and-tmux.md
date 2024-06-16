@@ -5,7 +5,9 @@ author: "alecthegeek"
 featured_image: "./resources/xdg-and-tmux/robot.jpeg"
 ---
 <!--
-This work is copyright Alec Clews 2014. It is licensed under a CC BY-NC-SA 4.0 license https://creativecommons.org/licenses/by-nc-sa/4.0/
+This work is copyright Alec Clews 2014.
+
+It is licensed under a Creative Commons ATTRIBUTION-SHAREALIKE 4.0 INTERNATIONAL license https://creativecommons.org/licenses/by-sa/4.0/ 
 -->
 <figure>
 <img src="./resources/xdg-and-tmux/robot.jpeg" alt="A cartoon of a robot with the words tmux" style="width:500px;"/>

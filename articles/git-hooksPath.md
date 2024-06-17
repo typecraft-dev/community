@@ -35,7 +35,7 @@ are executed on the `git commit` and `git push` commands. Consultant the fine ma
 Anything you want! For example:
 
 1. Beautify your content with a tool like [`gofmt`](https://pkg.go.dev/cmd/gofmt), or [`prettier`](https://prettier.io/), to adhere to project guidelines
-2. Lint your code and reject the commit if any problems detected
+2. Lint your code and reject the commit if any problems are detected
 4. Ensure that the commit message uses the correct template and cites a valid change request as per your project workflow
 5. Run unit tests.
 

@@ -103,4 +103,6 @@ Alec is a neck beard who lives and works on Bunurong Land, Melbourne, Australia.
 working with APIs and yak shaving. He learnt vi so long ago he still can't use the fancy
 visual mode in Vim.
 You can find him online in most places as [alecthegeek](https://alecthegeek.gitlab.io/).
-Feel free to reach out on [Mastodon](https://mstdn.social/@alecthegeek)
+Feel free to reach out on [Mastodon](https://mstdn.social/@alecthegeek).
+
+This article is an extract from a blog post on Hook automation with Lefthook at https://alecthegeek.gitlab.io/ (coming soon)

@@ -11,7 +11,7 @@ Ever heard of docker? I'm sure you have, today we will look at the newest kid on
 
 Podman is rootless and modern Docker made by RedHat; it's 100% FOSS and can run basically anywhere with a Linux kernel.
 
-Today we will take a look at how you can spin up your first pod and get started with Podman
+Today we will take a look at how you can spin up your first pod and get started with Podman, specifically their new Desktop version
 
 # Dependencies
 
